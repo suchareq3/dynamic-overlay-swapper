@@ -12,6 +12,7 @@ import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
 import { Image } from "primereact/image";
 import { Tooltip } from "primereact/tooltip";
+import { useHref } from "react-router";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -26,6 +27,7 @@ export function ConfigPanel() {
     const [loadingOverlays, setLoadingOverlays] = useState(false);
     const toast = useRef<Toast>(null);
     const fileUploadRef = useRef<FileUpload>(null);
+    const overlayHref = useHref("/overlay");
 
     const typeOptions = [
         { label: "Image", value: "image" },
@@ -199,80 +201,85 @@ export function ConfigPanel() {
             <Toast ref={toast} />
             <ConfirmDialog />
             {/* Create new overlay */}
-            <Card title="Create new overlay" className="w-80 h-fit">
-                <div className="flex flex-col">
-                    <div className="flex flex-col gap-2.5">
-                        <div className="flex flex-col">
-                            <label htmlFor="short_description" className="text-sm">Short description</label>
-                            <InputText
-                                id="short_description"
-                                value={shortDescription}
-                                onChange={(e) => setShortDescription(e.target.value)}
-                                placeholder="e.g. Cheer overlay"
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label htmlFor="type" className="text-sm">Type</label>
-                            <Dropdown
-                                id="type"
-                                value={type}
-                                onChange={(e) => setType(e.value)}
-                                options={typeOptions}
-                                placeholder="Select type"
-                            />
-                        </div>
-
-                        {type === "react-component" && (
+            <div className="flex flex-col justify-between">
+                <Card title="Create new overlay" className="w-80 h-fit">
+                    <div className="flex flex-col">
+                        <div className="flex flex-col gap-2.5">
                             <div className="flex flex-col">
-                                <Tooltip target=".custom-target-icon" className="w-70" position="bottom" content="The filename of the component (without '.tsx') found in `app/components/`. The component must have an 'export default' function that returns a React component. Have a look at the included 'ExampleComponent.tsx' file for an example."/>
-                                <label htmlFor="component_name" className="text-sm">Component name
-                                    <i className="custom-target-icon pi pi-question-circle text-sm! ml-1"/>
-                                </label>
+                                <label htmlFor="short_description" className="text-sm">Short description</label>
                                 <InputText
-                                    id="component_name"
-                                    value={componentName}
-                                    onChange={(e) => setComponentName(e.target.value)}
-                                    placeholder="e.g. ConfettiOverlay"
+                                    id="short_description"
+                                    value={shortDescription}
+                                    onChange={(e) => setShortDescription(e.target.value)}
+                                    placeholder="e.g. Cheer overlay"
                                 />
                             </div>
-                        )}
 
-                        {type === "image" && (
-                            <div className="" onClickCapture={(e) => {
-                                if (imageFile) {
-                                    fileUploadRef.current?.clear();
-                                    setImageFile(null);
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }
-                            }}>
-                                <label className="text-sm">Image (PNG/GIF)</label>
-                                <FileUpload
-                                    ref={fileUploadRef}
-                                    name="image"
-                                    mode="basic"
-                                    auto={false}
-                                    customUpload={true}
-                                    accept="image/png,image/gif"
-                                    onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
-                                    onClear={() => setImageFile(null)}
+                            <div className="flex flex-col">
+                                <label htmlFor="type" className="text-sm">Type</label>
+                                <Dropdown
+                                    id="type"
+                                    value={type}
+                                    onChange={(e) => setType(e.value)}
+                                    options={typeOptions}
+                                    placeholder="Select type"
                                 />
                             </div>
-                        )}
+
+                            {type === "react-component" && (
+                                <div className="flex flex-col">
+                                    <Tooltip target=".custom-target-icon" className="w-70" position="bottom" content="The filename of the component (without '.tsx') found in `app/components/`. The component must have an 'export default' function that returns a React component. Have a look at the included 'ExampleComponent.tsx' file for an example."/>
+                                    <label htmlFor="component_name" className="text-sm">Component name
+                                        <i className="custom-target-icon pi pi-question-circle text-sm! ml-1"/>
+                                    </label>
+                                    <InputText
+                                        id="component_name"
+                                        value={componentName}
+                                        onChange={(e) => setComponentName(e.target.value)}
+                                        placeholder="e.g. ConfettiOverlay"
+                                    />
+                                </div>
+                            )}
+
+                            {type === "image" && (
+                                <div className="" onClickCapture={(e) => {
+                                    if (imageFile) {
+                                        fileUploadRef.current?.clear();
+                                        setImageFile(null);
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                }}>
+                                    <label className="text-sm">Image (PNG/GIF)</label>
+                                    <FileUpload
+                                        ref={fileUploadRef}
+                                        name="image"
+                                        mode="basic"
+                                        auto={false}
+                                        customUpload={true}
+                                        accept="image/png,image/gif"
+                                        onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
+                                        onClear={() => setImageFile(null)}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <Divider/>
+
+                        <Button
+                            className="w-full"
+                            label={submitting ? "Submitting..." : "Create Overlay"}
+                            onClick={handleSubmit}
+                            disabled={submitting}
+                            icon="pi pi-plus"
+                        />
                     </div>
+                </Card>
+                <Button label="Open overlay in new tab" size="large" icon="pi pi-external-link" onClick={() => window.open(overlayHref, "_blank", "noopener, noreferrer")}/>
+            </div>
 
-                    <Divider/>
-
-                    <Button
-                        className="w-full"
-                        label={submitting ? "Submitting..." : "Create Overlay"}
-                        onClick={handleSubmit}
-                        disabled={submitting}
-                        icon="pi pi-plus"
-                    />
-                </div>
-            </Card>
+            
 
             <Divider layout="vertical"/>
 
