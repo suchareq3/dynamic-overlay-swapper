@@ -7,9 +7,10 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 
 ## Features
 
-- Upload .png or .gif images to use as overlays
-- ...or create your own custom React components to use as overlays
-- Provide one URL to use as an overlay in OBS (or other software), and hot-swap between your active overlays dynamically
+- Hosts a local webapp with your overlay of choice, whose URL you can provide to OBS
+- Upload your PNG/GIF images or create custom React components to use as overlays
+- All overlays are stored in a local, persistent database
+- Once uploaded, you can dynamically switch between your overlays in your config panel. The overlay will update _in real time_ - no need to change the source in OBS!
 
 ## How to use
 
@@ -32,6 +33,13 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 If necessary, you can log into the PocketBase admin panel at `http://localhost:8090` using these admin credentials:
 - Admin email: `adminadmin@gmail.com`
 - Admin password: `adminadmin`
+
+### Limitations
+
+- Overlays must be uploaded to the database before you can use them
+- Only .png and .gif images are supported
+- 1920x1080 images work best - there's no way to position images (unless you create a React Component overlay)
+- Only 1 overlay can be active at a time
 
 ### Frameworks & libraries used
 
