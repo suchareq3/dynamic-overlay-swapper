@@ -140,11 +140,11 @@ export function ConfigPanel() {
     const actionsBody = (row: any) => (
         <div className="flex gap-2">
             {row.active ? (
-                <Button label="De-activate" severity="warning" onClick={() => confirmDeactivate(row)} />
+                <Button label="De-activate" size="small" severity="warning" onClick={() => confirmDeactivate(row)} />
             ) : (
-                <Button label="Activate" onClick={() => confirmActivate(row)} />
+                <Button label="Activate" size="small" onClick={() => confirmActivate(row)} />
             )}
-            <Button label="Delete" outlined onClick={() => confirmDelete(row)} />
+            <Button size="small" label="Delete" outlined onClick={() => confirmDelete(row)} />
         </div>
     );
 
@@ -201,8 +201,8 @@ export function ConfigPanel() {
             <Toast ref={toast} />
             <ConfirmDialog />
             {/* Create new overlay */}
-            <div className="flex flex-col justify-between">
-                <Card title="Create new overlay" className="w-80 h-fit">
+            <div className="flex flex-col justify-between w-80">
+                <Card title="Create new overlay" className="h-fit">
                     <div className="flex flex-col">
                         <div className="flex flex-col gap-2.5">
                             <div className="flex flex-col">
@@ -276,7 +276,10 @@ export function ConfigPanel() {
                         />
                     </div>
                 </Card>
-                <Button label="Open overlay in new tab" size="large" icon="pi pi-external-link" onClick={() => window.open(overlayHref, "_blank", "noopener, noreferrer")}/>
+                <div className="flex flex-col text-lg">
+                    <p className="text-[var(--text-color)]">Overlay available at this URL: </p>
+                    <a className="text-[var(--primary-color)] font-bold hover:underline" href={overlayHref} target="_blank" rel="noopener noreferrer">{new URL(overlayHref, window.location.origin).href}</a>
+                </div>
             </div>
 
             
