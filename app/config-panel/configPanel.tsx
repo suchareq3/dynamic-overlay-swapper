@@ -11,6 +11,7 @@ import Pocketbase, { ClientResponseError } from "pocketbase";
 import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
 import { Image } from "primereact/image";
+import { Tooltip } from "primereact/tooltip";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -224,7 +225,10 @@ export function ConfigPanel() {
 
                         {type === "react-component" && (
                             <div className="flex flex-col">
-                                <label htmlFor="component_name" className="text-sm">Component name<i className="pi pi-question-circle text-sm! ml-1"></i></label>
+                                <Tooltip target=".custom-target-icon" className="w-70" position="bottom" content="The filename of the component (without '.tsx') found in `app/components/`. The component must have an 'export default' function that returns a React component. Have a look at the included 'ExampleComponent.tsx' file for an example."/>
+                                <label htmlFor="component_name" className="text-sm">Component name
+                                    <i className="custom-target-icon pi pi-question-circle text-sm! ml-1"/>
+                                </label>
                                 <InputText
                                     id="component_name"
                                     value={componentName}
