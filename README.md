@@ -19,7 +19,7 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 4. Open `http://localhost:8090` in your browser to access the config panel
 5. Upload an image or create a custom React component to use as an overlay
 6. Set the active overlay in the config panel
-7. Use the overlay by providing the overlay URL in OBS ('http://127.0.0.1:8090/overlay' by default)
+7. Use the overlay by providing the overlay URL in OBS (`http://127.0.0.1:8090/overlay` by default)
 
 ## Development
 
