@@ -1,94 +1,36 @@
-# Welcome to React Router!
+# Dynamic Overlay Swapper
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A web app built with React and PocketBase for dynamically swapping overlays for streaming software such as OBS.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Upload .png or .gif images to use as overlays
+- ...or create your own custom React components to use as overlays
+- Provide one URL to use as an overlay in OBS (or other software), and hot-swap between your active overlays dynamically
 
-## Getting Started
+## How to use
 
-### Installation
+1. Clone this repository
+2. Open a terminal in the root directory of the repository
+3. Run `./pocketbase serve` to start the PocketBase server
+4. Open `http://localhost:8090` in your browser to access the config panel
+5. Upload an image or create a custom React component to use as an overlay
+6. Set the active overlay in the config panel
+7. Use the overlay by providing the overlay URL in OBS ('http://127.0.0.1:8090/overlay' by default)
 
-Install the dependencies:
+## Development
 
-```bash
-npm install
-```
+1. Install dependencies: `npm install`
+2. Start the PocketBase server: `./pocketbase serve`
+3. Start the development server with HMR: `npm run dev` then open the config panel in your browser (default: `http://localhost:5173`)
+4. Once done with development, build the production app: `npm run build`
+5. Copy the contents of the `\build\client` directory to `\pb_public`
 
-### Development
+If necessary, you can log into the PocketBase admin panel at `http://localhost:8090` using these admin credentials:
+    Admin email: `adminadmin@gmail.com`
+    Admin password: `adminadmin`
 
-Start the development server with HMR:
+### Frameworks & libraries used
 
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
-
-
-
-## PocketBase
-
-Admin login: adminadmin@gmail.com
-Admin password: adminadmin
+- Backend: PocketBase (local)
+- Frontend: React, Vite, React Router, PrimeReact, TailwindCSS
