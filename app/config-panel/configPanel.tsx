@@ -109,6 +109,11 @@ export function ConfigPanel() {
         return <Image src={thumbUrl} zoomSrc={url} width="80" height="45" preview />;
     };
     
+    const getComponentNameBody = (row: any) => {
+        if (!row?.component_name) return <span className="text-gray-500">N/A</span>;
+        return <span>{row.component_name}</span>;
+    };
+    
     const actionsBody = (row: any) => (
         <div className="flex gap-2">
             <Button label="Activate" severity="success" onClick={() => confirmActivate(row)} disabled={row.active} />
@@ -251,7 +256,7 @@ export function ConfigPanel() {
             }>
                 <Column field="short_description" header="Short Description" sortable></Column>
                 <Column field="type" header="Type" sortable></Column>
-                <Column field="component_name" header="Component Name" sortable></Column>
+                <Column header="Component Name" body={getComponentNameBody} sortable></Column>
                 <Column header="Image" body={getImageBody}></Column>
                 <Column field="active" header="Active" sortable></Column>
                 <Column header="Actions" body={actionsBody}></Column>
