@@ -75,8 +75,28 @@ export function ConfigPanel() {
             header: "Activate overlay?",
             acceptLabel: "Activate",
             rejectLabel: "Cancel",
-            acceptClassName: "p-button-success",
             accept: () => handleActivate(record),
+        });
+    };
+
+    const handleDeactivate = async (record: any) => {
+        try {
+            await pb.collection("overlays").update(record.id, { active: false });
+            toast.current?.show({ severity: "success", summary: "Deactivated", detail: `Overlay deactivated: ${record.short_description}` });
+        } catch (err: any) {
+            console.error(err);
+            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to change active overlay" });
+        }
+    };
+
+    const confirmDeactivate = (record: any) => {
+        confirmDialog({
+            message: `Deactivate the "${record.short_description}" overlay?`,
+            header: "Deactivate overlay?",
+            acceptLabel: "Deactivate",
+            rejectLabel: "Cancel",
+            acceptClassName: "p-button-warning",
+            accept: () => handleDeactivate(record),
         });
     };
 
@@ -116,8 +136,12 @@ export function ConfigPanel() {
     
     const actionsBody = (row: any) => (
         <div className="flex gap-2">
-            <Button label="Activate" severity="success" onClick={() => confirmActivate(row)} disabled={row.active} />
-            <Button label="Delete" severity="danger" onClick={() => confirmDelete(row)} />
+            {row.active ? (
+                <Button label="De-activate" severity="warning" onClick={() => confirmDeactivate(row)} />
+            ) : (
+                <Button label="Activate" onClick={() => confirmActivate(row)} />
+            )}
+            <Button label="Delete" outlined onClick={() => confirmDelete(row)} />
         </div>
     );
 
