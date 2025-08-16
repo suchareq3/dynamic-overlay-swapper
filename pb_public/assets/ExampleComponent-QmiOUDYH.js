@@ -1,0 +1,1 @@
+import{p as e}from"./chunk-UH6JLGW7-CMexunR-.js";function n(){return e.jsx(e.Fragment,{children:e.jsx("div",{className:"p-4 border border-gray-200 rounded text-3xl",children:"Example Component"})})}export{n as default};

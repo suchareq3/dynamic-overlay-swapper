@@ -9,5 +9,11 @@ export default defineConfig({
     watch: {
       ignored: ["**/pb_data/**"]
     }
+  },
+  ssr: {
+    noExternal: ["primereact"]
+  },
+  build: {
+    target: "esnext"
   }
 });
