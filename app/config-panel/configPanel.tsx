@@ -10,6 +10,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import Pocketbase, { ClientResponseError } from "pocketbase";
 import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
+import { Image } from "primereact/image";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -101,8 +102,10 @@ export function ConfigPanel() {
 
     const getImageBody = (row: any) => {
         if (!row?.image) return <span className="text-gray-500">N/A</span>;
+
         const url = pb.files.getURL(row, row.image);
-        return <img src={url} alt={row.short_description} style={{ width: 144, height: 81, objectFit: "cover", borderRadius: 0 }} />;
+        const thumbUrl = pb.files.getURL(row, row.image, { thumb: "80x45" });
+        return <Image src={thumbUrl} zoomSrc={url} width="80" height="45" preview />;
     };
     
     const actionsBody = (row: any) => (
@@ -150,8 +153,7 @@ export function ConfigPanel() {
             setType("");
             setComponentName("");
             setImageFile(null);
-            // refresh list (subscription will also catch it, but do immediate refresh for responsiveness)
-            fetchOverlays();
+            
         } catch (err: any) {
             console.error(err);
             const detail = err?.message || "Failed to create overlay";
