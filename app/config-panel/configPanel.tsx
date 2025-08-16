@@ -9,6 +9,7 @@ import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import Pocketbase, { ClientResponseError } from "pocketbase";
 import { Card } from "primereact/card";
+import { Divider } from "primereact/divider";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -161,62 +162,66 @@ export function ConfigPanel() {
     };
 
     return (
-        <div>
+        <div className="flex min-h-screen p-8">
             <Toast ref={toast} />
             <ConfirmDialog />
             {/* Create new overlay */}
-            <Card title="Create new overlay" className="w-80">
-                <div className="flex flex-col gap-1">
-                    <div className="flex flex-col">
-                        <label htmlFor="short_description" className="text-sm">Short description</label>
-                        <InputText
-                            id="short_description"
-                            value={shortDescription}
-                            onChange={(e) => setShortDescription(e.target.value)}
-                            placeholder="e.g. Cheer overlay"
-                        />
-                    </div>
-
-                    <div className="flex flex-col">
-                        <label htmlFor="type" className="text-sm">Type</label>
-                        <Dropdown
-                            id="type"
-                            value={type}
-                            onChange={(e) => setType(e.value)}
-                            options={typeOptions}
-                            placeholder="Select type"
-                        />
-                    </div>
-
-                    {type === "react-component" && (
+            <Card title="Create new overlay" className="w-80 h-fit">
+                <div className="flex flex-col">
+                    <div className="flex flex-col gap-2.5">
                         <div className="flex flex-col">
-                            <label htmlFor="component_name" className="text-sm">Component name<i className="pi pi-question-circle text-sm! ml-1"></i></label>
+                            <label htmlFor="short_description" className="text-sm">Short description</label>
                             <InputText
-                                id="component_name"
-                                value={componentName}
-                                onChange={(e) => setComponentName(e.target.value)}
-                                placeholder="e.g. ConfettiOverlay"
+                                id="short_description"
+                                value={shortDescription}
+                                onChange={(e) => setShortDescription(e.target.value)}
+                                placeholder="e.g. Cheer overlay"
                             />
                         </div>
-                    )}
 
-                    {type === "image" && (
-                        <div className="">
-                            <label className="text-sm">Image (PNG/GIF)</label>
-                            <FileUpload
-                                name="image"
-                                mode="basic"
-                                auto={false}
-                                customUpload={false}
-                                accept="image/png,image/gif"
-                                onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
-                                onClear={() => setImageFile(null)}
+                        <div className="flex flex-col">
+                            <label htmlFor="type" className="text-sm">Type</label>
+                            <Dropdown
+                                id="type"
+                                value={type}
+                                onChange={(e) => setType(e.value)}
+                                options={typeOptions}
+                                placeholder="Select type"
                             />
                         </div>
-                    )}
+
+                        {type === "react-component" && (
+                            <div className="flex flex-col">
+                                <label htmlFor="component_name" className="text-sm">Component name<i className="pi pi-question-circle text-sm! ml-1"></i></label>
+                                <InputText
+                                    id="component_name"
+                                    value={componentName}
+                                    onChange={(e) => setComponentName(e.target.value)}
+                                    placeholder="e.g. ConfettiOverlay"
+                                />
+                            </div>
+                        )}
+
+                        {type === "image" && (
+                            <div className="">
+                                <label className="text-sm">Image (PNG/GIF)</label>
+                                <FileUpload
+                                    name="image"
+                                    mode="basic"
+                                    auto={false}
+                                    customUpload={false}
+                                    accept="image/png,image/gif"
+                                    onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
+                                    onClear={() => setImageFile(null)}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <Divider/>
 
                     <Button
-                        className="w-fit mt-6!"
+                        className="w-full"
                         label={submitting ? "Submitting..." : "Create Overlay"}
                         onClick={handleSubmit}
                         disabled={submitting}
@@ -225,18 +230,21 @@ export function ConfigPanel() {
                 </div>
             </Card>
 
+            <Divider layout="vertical"/>
+
             {/* Select overlay */}
-            <div>
-                <h1>Select Overlay</h1>
-                <DataTable value={overlays} loading={loadingOverlays} paginator rows={10} responsiveLayout="scroll" emptyMessage="No overlays found">
-                    <Column field="short_description" header="Short Description" sortable></Column>
-                    <Column field="type" header="Type" sortable></Column>
-                    <Column field="component_name" header="Component Name" sortable></Column>
-                    <Column header="Image" body={getImageBody}></Column>
-                    <Column field="active" header="Active"  sortable></Column>
-                    <Column header="Actions" body={actionsBody} style={{ width: 220 }}></Column>
-                </DataTable>
-            </div>
+            <DataTable stripedRows showGridlines value={overlays} loading={loadingOverlays} scrollable scrollHeight="85vh" emptyMessage="No overlays found. Add a new one!" header={
+                <div className="flex justify-between">
+                    <h1 className="font-bold text-2xl text-[var(--text-color)]">Select an overlay</h1>
+                </div>
+            }>
+                <Column field="short_description" header="Short Description" sortable></Column>
+                <Column field="type" header="Type" sortable></Column>
+                <Column field="component_name" header="Component Name" sortable></Column>
+                <Column header="Image" body={getImageBody}></Column>
+                <Column field="active" header="Active" sortable></Column>
+                <Column header="Actions" body={actionsBody}></Column>
+            </DataTable>
         </div>
     )
 }

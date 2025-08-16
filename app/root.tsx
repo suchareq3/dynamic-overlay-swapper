@@ -44,10 +44,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const primeConfig = {
+  ripple: true,
+}
+
 export default function App() {
-  return <PrimeReactProvider>
-    <Outlet />
-  </PrimeReactProvider>;
+  return (
+    <PrimeReactProvider value={primeConfig}>
+      <Outlet />
+    </PrimeReactProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
