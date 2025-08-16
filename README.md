@@ -2,6 +2,9 @@
 
 A web app built with React and PocketBase for dynamically swapping overlays for streaming software such as OBS.
 
+<img width="1919" height="895" alt="image" src="https://github.com/user-attachments/assets/3a429770-cea2-4844-8326-b8f5592c7a6a" />
+
+
 ## Features
 
 - Upload .png or .gif images to use as overlays
@@ -27,8 +30,8 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 5. Copy the contents of the `\build\client` directory to `\pb_public`
 
 If necessary, you can log into the PocketBase admin panel at `http://localhost:8090` using these admin credentials:
-    Admin email: `adminadmin@gmail.com`
-    Admin password: `adminadmin`
+- Admin email: `adminadmin@gmail.com`
+- Admin password: `adminadmin`
 
 ### Frameworks & libraries used
 
