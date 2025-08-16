@@ -8,6 +8,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import Pocketbase, { ClientResponseError } from "pocketbase";
+import { Card } from "primereact/card";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -30,7 +31,6 @@ export function ConfigPanel() {
     const fetchOverlays = async () => {
         try {
             setLoadingOverlays(true);
-            // pull all records; adjust per your collection rules/pagination
             const res = await pb.collection("overlays").getFullList({ sort: "-created" });
             setOverlays(res);
         } catch (err) {
@@ -48,43 +48,28 @@ export function ConfigPanel() {
         // initial load
         fetchOverlays().then(() => {
             pb.collection("overlays").subscribe("*", () => {
-                // simplest: re-fetch on any change
-                pb.can
                 fetchOverlays();
             });
         });
-        // subscribe to realtime changes
-        
         return () => {
             try { pb.collection("overlays").unsubscribe() } catch {}
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const ensureSingleActive = async (targetId: string) => {
-        // Deactivate any other active overlays, then activate target
-        const currentActive = overlays.filter((o) => o.active && o.id !== targetId);
-        for (const rec of currentActive) {
-            try { await pb.collection("overlays").update(rec.id, { active: false }); } catch (e) { console.error(e); }
-        }
-    };
 
     const handleActivate = async (record: any) => {
         try {
-            await ensureSingleActive(record.id);
             await pb.collection("overlays").update(record.id, { active: true });
-            toast.current?.show({ severity: "success", summary: "Activated", detail: `Activated: ${record.short_description}` });
+            toast.current?.show({ severity: "success", summary: "Activated", detail: `Overlay activated: ${record.short_description}` });
         } catch (err: any) {
             console.error(err);
-            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to activate" });
+            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to change active overlay" });
         }
     };
 
     const confirmActivate = (record: any) => {
         confirmDialog({
-            message: `Set "${record.short_description}" as active? This will deactivate any other active overlay.`,
-            header: "Confirm Activate",
-            icon: "pi pi-exclamation-triangle",
+            message: `Set "${record.short_description}" as the active overlay? This will deactivate any other active overlay.`,
+            header: "Activate overlay?",
             acceptLabel: "Activate",
             rejectLabel: "Cancel",
             acceptClassName: "p-button-success",
@@ -104,9 +89,8 @@ export function ConfigPanel() {
 
     const confirmDelete = (record: any) => {
         confirmDialog({
-            message: `Delete "${record.short_description}"? This cannot be undone.`,
-            header: "Confirm Delete",
-            icon: "pi pi-trash",
+            message: `Delete the "${record.short_description}" overlay? This cannot be undone.`,
+            header: "Delete overlay?",
             acceptLabel: "Delete",
             rejectLabel: "Cancel",
             acceptClassName: "p-button-danger",
@@ -114,18 +98,16 @@ export function ConfigPanel() {
         });
     };
 
-    const imageBody = (row: any) => {
-        if (!row?.image) return <span style={{ opacity: 0.6 }}>—</span>;
+    const getImageBody = (row: any) => {
+        if (!row?.image) return <span className="text-gray-500">N/A</span>;
         const url = pb.files.getURL(row, row.image);
-        return <img src={url} alt={row.short_description} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 6 }} />;
+        return <img src={url} alt={row.short_description} style={{ width: 144, height: 81, objectFit: "cover", borderRadius: 0 }} />;
     };
-
-    const activeBody = (row: any) => <span>{row.active ? "true" : "false"}</span>;
-
+    
     const actionsBody = (row: any) => (
-        <div className="p-d-flex p-ai-center p-gap-2" style={{ display: "flex", gap: 8 }}>
-            <Button label="Activate" icon="pi pi-check" severity="success" outlined onClick={() => confirmActivate(row)} disabled={row.active} />
-            <Button label="Delete" icon="pi pi-trash" severity="danger" outlined onClick={() => confirmDelete(row)} />
+        <div className="flex gap-2">
+            <Button label="Activate" severity="success" onClick={() => confirmActivate(row)} disabled={row.active} />
+            <Button label="Delete" severity="danger" onClick={() => confirmDelete(row)} />
         </div>
     );
 
@@ -183,11 +165,10 @@ export function ConfigPanel() {
             <Toast ref={toast} />
             <ConfirmDialog />
             {/* Create new overlay */}
-            <div>
-                <h1>Create New Overlay</h1>
-                <div className="p-fluid p-formgrid p-grid" style={{ maxWidth: 640 }}>
-                    <div className="p-field p-col-12">
-                        <label htmlFor="short_description">Short description</label>
+            <Card title="Create new overlay" className="w-80">
+                <div className="flex flex-col gap-1">
+                    <div className="flex flex-col">
+                        <label htmlFor="short_description" className="text-sm">Short description</label>
                         <InputText
                             id="short_description"
                             value={shortDescription}
@@ -196,8 +177,8 @@ export function ConfigPanel() {
                         />
                     </div>
 
-                    <div className="p-field p-col-12">
-                        <label htmlFor="type">Type</label>
+                    <div className="flex flex-col">
+                        <label htmlFor="type" className="text-sm">Type</label>
                         <Dropdown
                             id="type"
                             value={type}
@@ -208,8 +189,8 @@ export function ConfigPanel() {
                     </div>
 
                     {type === "react-component" && (
-                        <div className="p-field p-col-12">
-                            <label htmlFor="component_name">Component name</label>
+                        <div className="flex flex-col">
+                            <label htmlFor="component_name" className="text-sm">Component name<i className="pi pi-question-circle text-sm! ml-1"></i></label>
                             <InputText
                                 id="component_name"
                                 value={componentName}
@@ -220,31 +201,29 @@ export function ConfigPanel() {
                     )}
 
                     {type === "image" && (
-                        <div className="p-field p-col-12">
-                            <label>Image (PNG/GIF)</label>
+                        <div className="">
+                            <label className="text-sm">Image (PNG/GIF)</label>
                             <FileUpload
                                 name="image"
                                 mode="basic"
                                 auto={false}
                                 customUpload={false}
                                 accept="image/png,image/gif"
-                                chooseLabel={imageFile ? imageFile.name : "Choose"}
                                 onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
                                 onClear={() => setImageFile(null)}
                             />
                         </div>
                     )}
 
-                    <div className="p-field p-col-12" style={{ marginTop: 8 }}>
-                        <Button
-                            label={submitting ? "Submitting..." : "Create Overlay"}
-                            onClick={handleSubmit}
-                            disabled={submitting}
-                            icon="pi pi-plus"
-                        />
-                    </div>
+                    <Button
+                        className="w-fit mt-6!"
+                        label={submitting ? "Submitting..." : "Create Overlay"}
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                        icon="pi pi-plus"
+                    />
                 </div>
-            </div>
+            </Card>
 
             {/* Select overlay */}
             <div>
@@ -253,8 +232,8 @@ export function ConfigPanel() {
                     <Column field="short_description" header="Short Description" sortable></Column>
                     <Column field="type" header="Type" sortable></Column>
                     <Column field="component_name" header="Component Name" sortable></Column>
-                    <Column header="Image" body={imageBody}></Column>
-                    <Column field="active" header="Active" body={activeBody} sortable></Column>
+                    <Column header="Image" body={getImageBody}></Column>
+                    <Column field="active" header="Active"  sortable></Column>
                     <Column header="Actions" body={actionsBody} style={{ width: 220 }}></Column>
                 </DataTable>
             </div>

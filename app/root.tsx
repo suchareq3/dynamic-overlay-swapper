@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import "primereact/resources/themes/lara-dark-teal/theme.css";
+import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from "primereact/api";
 
 export const links: Route.LinksFunction = () => [
