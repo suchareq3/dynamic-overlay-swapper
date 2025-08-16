@@ -24,6 +24,7 @@ export function ConfigPanel() {
     const [overlays, setOverlays] = useState<any[]>([]);
     const [loadingOverlays, setLoadingOverlays] = useState(false);
     const toast = useRef<Toast>(null);
+    const fileUploadRef = useRef<FileUpload>(null);
 
     const typeOptions = [
         { label: "Image", value: "image" },
@@ -205,13 +206,21 @@ export function ConfigPanel() {
                         )}
 
                         {type === "image" && (
-                            <div className="">
+                            <div className="" onClickCapture={(e) => {
+                                if (imageFile) {
+                                    fileUploadRef.current?.clear();
+                                    setImageFile(null);
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                            }}>
                                 <label className="text-sm">Image (PNG/GIF)</label>
                                 <FileUpload
+                                    ref={fileUploadRef}
                                     name="image"
                                     mode="basic"
                                     auto={false}
-                                    customUpload={false}
+                                    customUpload={true}
                                     accept="image/png,image/gif"
                                     onSelect={(e) => setImageFile((e.files && e.files[0]) || null)}
                                     onClear={() => setImageFile(null)}
