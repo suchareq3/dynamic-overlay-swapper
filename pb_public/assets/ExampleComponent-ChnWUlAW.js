@@ -1,0 +1,1 @@
+import{p as e}from"./chunk-UH6JLGW7-oKmrXizJ.js";import{u as t}from"./pocketbase.es-DDFA3sFr.js";import"./i18nInstance-CHFDjdcJ.js";function a(){const{t:r}=t();return e.jsx(e.Fragment,{children:e.jsx("div",{className:"p-4 border border-gray-200 rounded text-3xl",children:r("components.example_text")})})}export{a as default};

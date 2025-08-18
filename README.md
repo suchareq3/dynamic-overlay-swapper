@@ -11,6 +11,7 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 - Upload your PNG/GIF images or create custom React components to use as overlays
 - All overlays are stored in a local, persistent database
 - Once uploaded, you can dynamically switch between your overlays in your config panel. The overlay will update _in real time_ - no need to change the source in OBS!
+- Config panel supports English & Polish
 
 ## How to use
 
@@ -27,8 +28,9 @@ A web app built with React and PocketBase for dynamically swapping overlays for 
 1. Install dependencies: `npm install`
 2. Start the PocketBase server: `./pocketbase serve`
 3. Start the development server with HMR: `npm run dev` then open the config panel in your browser (default: `http://localhost:5173`)
-4. Once done with development, build the production app: `npm run build`
-5. Copy the contents of the `\build\client` directory to `\pb_public`
+4. If translating the app, run `npm run extract` to extract new strings to translate - they will be located in `/public/locales`
+5. Once done with development, build the production app: `npm run build`
+6. Copy the contents of the `\build\client` directory to `\pb_public`
 
 If necessary, you can log into the PocketBase admin panel at `http://localhost:8090` using these admin credentials:
 - Admin email: `adminadmin@gmail.com`

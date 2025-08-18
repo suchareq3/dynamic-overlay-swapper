@@ -13,6 +13,7 @@ import { Divider } from "primereact/divider";
 import { Image } from "primereact/image";
 import { Tooltip } from "primereact/tooltip";
 import { useHref } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -28,10 +29,28 @@ export function ConfigPanel() {
     const toast = useRef<Toast>(null);
     const fileUploadRef = useRef<FileUpload>(null);
     const overlayHref = useHref("/overlay");
+    
+    const { t, i18n } = useTranslation();
+
+    type LanguageOption = { code: 'en' | 'pl'; name: string; flag: string };
+    const languageOptions: LanguageOption[] = [
+        { code: 'en', name: t("config_panel.english"), flag: '🇬🇧' },
+        { code: 'pl', name: t("config_panel.polish"), flag: '🇵🇱' },
+    ];
+    const langItemTemplate = (option: LanguageOption) => (
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{option.flag}</span>
+          <span>{option.name}</span>
+        </div>
+    );  
+    const langValueTemplate = (option: LanguageOption) => (
+        <span className="text-xl">{option?.flag}</span>
+    );
+    const selectedLang = languageOptions.find(l => l.code === i18n.language);
 
     const typeOptions = [
-        { label: "Image", value: "image" },
-        { label: "React Component", value: "react-component" },
+        { label: t("config_panel.image"), value: "image" },
+        { label: t("config_panel.react_component"), value: "react-component" },
     ];
 
     const fetchOverlays = async () => {
@@ -43,7 +62,7 @@ export function ConfigPanel() {
             // allow intended auto-cancellation errors - https://github.com/pocketbase/pocketbase/discussions/3491
             if (err instanceof ClientResponseError && !err.isAbort) {
                 console.error(err);
-                toast.current?.show({ severity: "error", summary: "Error", detail: "Failed to load overlays" });
+                toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail: t("config_panel.overlay_load_error") });
             }
         } finally {
             setLoadingOverlays(false);
@@ -65,19 +84,19 @@ export function ConfigPanel() {
     const handleActivate = async (record: any) => {
         try {
             await pb.collection("overlays").update(record.id, { active: true });
-            toast.current?.show({ severity: "success", summary: "Activated", detail: `Overlay activated: ${record.short_description}` });
+            toast.current?.show({ severity: "success", summary: t("config_panel.activated"), detail: t("config_panel.overlay_activated", { overlay: record.short_description }) });
         } catch (err: any) {
             console.error(err);
-            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to change active overlay" });
+            toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail: err?.message || t("config_panel.overlay_activation_failed") });
         }
     };
 
     const confirmActivate = (record: any) => {
         confirmDialog({
-            message: `Set "${record.short_description}" as the active overlay? This will deactivate any other active overlay.`,
-            header: "Activate overlay?",
-            acceptLabel: "Activate",
-            rejectLabel: "Cancel",
+            message: t("config_panel.activate_overlay_confirm", { overlay: record.short_description }),
+            header: t("config_panel.activate_overlay_header"),
+            acceptLabel: t("config_panel.activate"),
+            rejectLabel: t("config_panel.cancel"),
             accept: () => handleActivate(record),
         });
     };
@@ -85,19 +104,19 @@ export function ConfigPanel() {
     const handleDeactivate = async (record: any) => {
         try {
             await pb.collection("overlays").update(record.id, { active: false });
-            toast.current?.show({ severity: "success", summary: "Deactivated", detail: `Overlay deactivated: ${record.short_description}` });
+            toast.current?.show({ severity: "success", summary: t("config_panel.deactivated"), detail: t("config_panel.overlay_deactivated", { overlay: record.short_description }) });
         } catch (err: any) {
             console.error(err);
-            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to change active overlay" });
+            toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail: err?.message || t("config_panel.overlay_deactivation_failed") });
         }
     };
 
     const confirmDeactivate = (record: any) => {
         confirmDialog({
-            message: `Deactivate the "${record.short_description}" overlay?`,
-            header: "Deactivate overlay?",
-            acceptLabel: "Deactivate",
-            rejectLabel: "Cancel",
+            message: t("config_panel.deactivate_overlay_confirm", { overlay: record.short_description }),
+            header: t("config_panel.deactivate_overlay_header"),
+            acceptLabel: t("config_panel.deactivate"),
+            rejectLabel: t("config_panel.cancel"),
             acceptClassName: "p-button-warning",
             accept: () => handleDeactivate(record),
         });
@@ -106,19 +125,19 @@ export function ConfigPanel() {
     const handleDelete = async (record: any) => {
         try {
             await pb.collection("overlays").delete(record.id);
-            toast.current?.show({ severity: "success", summary: "Deleted", detail: `Deleted: ${record.short_description}` });
+            toast.current?.show({ severity: "success", summary: t("config_panel.deleted"), detail: t("config_panel.overlay_deleted", { overlay: record.short_description }) });
         } catch (err: any) {
             console.error(err);
-            toast.current?.show({ severity: "error", summary: "Error", detail: err?.message || "Failed to delete" });
+            toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail: err?.message || t("config_panel.overlay_deletion_failed") });
         }
     };
 
     const confirmDelete = (record: any) => {
         confirmDialog({
-            message: `Delete the "${record.short_description}" overlay? This cannot be undone.`,
-            header: "Delete overlay?",
-            acceptLabel: "Delete",
-            rejectLabel: "Cancel",
+            message: t("config_panel.delete_overlay_confirm", { overlay: record.short_description }),
+            header: t("config_panel.delete_overlay_header"),
+            acceptLabel: t("config_panel.delete"),
+            rejectLabel: t("config_panel.cancel"),
             acceptClassName: "p-button-danger",
             accept: () => handleDelete(record),
         });
@@ -140,11 +159,11 @@ export function ConfigPanel() {
     const actionsBody = (row: any) => (
         <div className="flex gap-2">
             {row.active ? (
-                <Button label="De-activate" size="small" severity="warning" onClick={() => confirmDeactivate(row)} />
+                <Button label={t("config_panel.deactivate")} size="small" severity="warning" onClick={() => confirmDeactivate(row)} />
             ) : (
-                <Button label="Activate" size="small" onClick={() => confirmActivate(row)} />
+                <Button label={t("config_panel.activate")} size="small" onClick={() => confirmActivate(row)} />
             )}
-            <Button size="small" label="Delete" outlined onClick={() => confirmDelete(row)} />
+            <Button size="small" label={t("config_panel.delete")} outlined onClick={() => confirmDelete(row)} />
         </div>
     );
 
@@ -152,19 +171,19 @@ export function ConfigPanel() {
         try {
             // basic validation
             if (!shortDescription.trim()) {
-                toast.current?.show({ severity: "warn", summary: "Validation", detail: "Short description is required" });
+                toast.current?.show({ severity: "warn", summary: t("config_panel.validation"), detail: t("config_panel.short_description_required") });
                 return;
             }
             if (!type) {
-                toast.current?.show({ severity: "warn", summary: "Validation", detail: "Type is required" });
+                toast.current?.show({ severity: "warn", summary: t("config_panel.validation"), detail: t("config_panel.type_required") });
                 return;
             }
             if (type === "react-component" && !componentName.trim()) {
-                toast.current?.show({ severity: "warn", summary: "Validation", detail: "Component name is required for React component overlays" });
+                toast.current?.show({ severity: "warn", summary: t("config_panel.validation"), detail: t("config_panel.component_name_required") });
                 return;
             }
             if (type === "image" && !imageFile) {
-                toast.current?.show({ severity: "warn", summary: "Validation", detail: "Please choose a PNG or GIF image" });
+                toast.current?.show({ severity: "warn", summary: t("config_panel.validation"), detail: t("config_panel.image_required") });
                 return;
             }
 
@@ -180,7 +199,7 @@ export function ConfigPanel() {
 
             await pb.collection("overlays").create(formData);
 
-            toast.current?.show({ severity: "success", summary: "Created", detail: "Overlay created successfully" });
+            toast.current?.show({ severity: "success", summary: t("config_panel.created"), detail: t("config_panel.overlay_created") });
             // reset form
             setShortDescription("");
             setType("");
@@ -189,8 +208,8 @@ export function ConfigPanel() {
             
         } catch (err: any) {
             console.error(err);
-            const detail = err?.message || "Failed to create overlay";
-            toast.current?.show({ severity: "error", summary: "Error", detail });
+            const detail = err?.message || t("config_panel.overlay_creation_failed");
+            toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail });
         } finally {
             setSubmitting(false);
         }
@@ -202,41 +221,42 @@ export function ConfigPanel() {
             <ConfirmDialog />
             {/* Create new overlay */}
             <div className="flex flex-col justify-between w-80">
-                <Card title="Create new overlay" className="h-fit">
+                <Card title={t("config_panel.create_new_overlay")} className="h-fit">
                     <div className="flex flex-col">
                         <div className="flex flex-col gap-2.5">
                             <div className="flex flex-col">
-                                <label htmlFor="short_description" className="text-sm">Short description</label>
+                                <label htmlFor="short_description" className="text-sm">{t("config_panel.short_description")}</label>
                                 <InputText
                                     id="short_description"
                                     value={shortDescription}
                                     onChange={(e) => setShortDescription(e.target.value)}
-                                    placeholder="e.g. Cheer overlay"
+                                    placeholder={t("config_panel.short_description_inputtext_placeholder")}
                                 />
                             </div>
 
                             <div className="flex flex-col">
-                                <label htmlFor="type" className="text-sm">Type</label>
+                                <label htmlFor="type" className="text-sm">{t("config_panel.type")}</label>
                                 <Dropdown
                                     id="type"
                                     value={type}
                                     onChange={(e) => setType(e.value)}
                                     options={typeOptions}
-                                    placeholder="Select type"
+                                    placeholder={t("config_panel.type_placeholder")}
                                 />
                             </div>
 
                             {type === "react-component" && (
                                 <div className="flex flex-col">
-                                    <Tooltip target=".custom-target-icon" className="w-70" position="bottom" content="The filename of the component (without '.tsx') found in `app/components/`. The component must have an 'export default' function that returns a React component. Have a look at the included 'ExampleComponent.tsx' file for an example."/>
-                                    <label htmlFor="component_name" className="text-sm">Component name
+                                    <Tooltip target=".custom-target-icon" className="w-70" position="bottom" content={t("config_panel.component_name_info_tooltip")}/>
+                                    <label htmlFor="component_name" className="text-sm">
+                                        {t("config_panel.component_name")}
                                         <i className="custom-target-icon pi pi-question-circle text-sm! ml-1"/>
                                     </label>
                                     <InputText
                                         id="component_name"
                                         value={componentName}
                                         onChange={(e) => setComponentName(e.target.value)}
-                                        placeholder="e.g. ConfettiOverlay"
+                                        placeholder={t("config_panel.component_name_inputtext_placeholder")}
                                     />
                                 </div>
                             )}
@@ -250,7 +270,7 @@ export function ConfigPanel() {
                                         e.stopPropagation();
                                     }
                                 }}>
-                                    <label className="text-sm">Image (PNG/GIF)</label>
+                                    <label className="text-sm">{t("config_panel.image_fileupload_label")}</label>
                                     <FileUpload
                                         ref={fileUploadRef}
                                         name="image"
@@ -269,7 +289,7 @@ export function ConfigPanel() {
 
                         <Button
                             className="w-full"
-                            label={submitting ? "Submitting..." : "Create Overlay"}
+                            label={submitting ? t("config_panel.submitting") : t("config_panel.create_overlay")}
                             onClick={handleSubmit}
                             disabled={submitting}
                             icon="pi pi-plus"
@@ -277,28 +297,37 @@ export function ConfigPanel() {
                     </div>
                 </Card>
                 <div className="flex flex-col text-lg">
-                    <p className="text-[var(--text-color)]">Overlay available at this URL: </p>
+                    <p className="text-[var(--text-color)]">{t("config_panel.overlay_available_at_url")}</p>
                     <a className="text-[var(--primary-color)] font-bold hover:underline" href={overlayHref} target="_blank" rel="noopener noreferrer">{new URL(overlayHref, window.location.origin).href}</a>
                 </div>
             </div>
 
-            
-
             <Divider layout="vertical"/>
 
             {/* Select overlay */}
-            <DataTable stripedRows showGridlines value={overlays} loading={loadingOverlays} scrollable scrollHeight="85vh" emptyMessage="No overlays found. Add a new one!" header={
+            <DataTable className="mr-6" stripedRows showGridlines value={overlays} loading={loadingOverlays} scrollable scrollHeight="85vh" emptyMessage={t("config_panel.no_overlays_found")} header={
                 <div className="flex justify-between">
-                    <h1 className="font-bold text-2xl text-[var(--text-color)]">Select an overlay</h1>
+                    <h1 className="font-bold text-2xl text-[var(--text-color)]">{t("config_panel.select_overlay")}</h1>
                 </div>
             }>
-                <Column field="short_description" header="Short Description" sortable></Column>
-                <Column field="type" header="Type" sortable></Column>
-                <Column header="Component Name" body={getComponentNameBody} sortable></Column>
-                <Column header="Image" body={getImageBody}></Column>
-                <Column field="active" header="Active" sortable></Column>
-                <Column header="Actions" body={actionsBody}></Column>
+                <Column field="short_description" header={t("config_panel.short_description")} sortable></Column>
+                <Column field="type" header={t("config_panel.type")} sortable></Column>
+                <Column header={t("config_panel.component_name")} body={getComponentNameBody} sortable></Column>
+                <Column header={t("config_panel.image")} body={getImageBody}></Column>
+                <Column field="active" header={t("config_panel.active")} sortable></Column>
+                <Column header={t("config_panel.actions")} body={actionsBody}></Column>
             </DataTable>
+
+            <Dropdown
+                value={selectedLang}
+                onChange={(e) => i18n.changeLanguage(e.value.code)}
+                options={languageOptions}
+                optionLabel="name"
+                itemTemplate={langItemTemplate}
+                valueTemplate={langValueTemplate}
+                className="w-fit h-fit self-end ml-auto"
+                aria-label="Language"
+            />
         </div>
     )
 }

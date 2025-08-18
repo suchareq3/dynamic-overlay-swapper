@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import type React from "react";
 import Pocketbase from "pocketbase";
+import { useTranslation } from "react-i18next";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -22,6 +23,8 @@ const findComponentImporter = (name: string): ModuleLoader | null => {
 };
 
 export function Overlay() {
+    const { t, i18n } = useTranslation();
+
     const [active, setActive] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -49,11 +52,11 @@ export function Overlay() {
     }, []);
 
     if (loading) {
-        return <p className="text-2xl">Loading overlay…</p>;
+        return <p className="text-2xl">{t("overlay.loading_overlay")}</p>;
     }
 
     if (!active) {
-        return <p className="text-2xl">No active overlay</p>;
+        return <p className="text-2xl">{t("overlay.inactive")}</p>;
     }
 
     if (active.type === "image" && active.image) {
@@ -70,7 +73,9 @@ export function Overlay() {
 
         if (!importer) {
             return (
-                <p className="text-2xl text-red-500">Component file "{active.component_name}.tsx" not found under `app/components/`.</p>
+                <p className="text-2xl text-red-500">
+                    {t("overlay.componentNotFound", { name: active.component_name })}
+                </p>
             );
         }
 
@@ -82,7 +87,7 @@ export function Overlay() {
 
         return (
             <div className="w-screen h-screen">
-                <Suspense fallback={<p className="text-2xl">Loading component…</p>}>
+                <Suspense fallback={<p className="text-2xl">{t("overlay.loading_component")}</p>}>
                     <LazyComp />
                 </Suspense>
             </div>

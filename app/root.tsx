@@ -12,6 +12,8 @@ import "./app.css";
 import "primereact/resources/themes/lara-dark-teal/theme.css";
 import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from "primereact/api";
+import "./i18n";
+import i18n from "./i18n";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,6 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 const primeConfig = {
   ripple: true,
+  locale: i18n.language,
 }
 
 export default function App() {

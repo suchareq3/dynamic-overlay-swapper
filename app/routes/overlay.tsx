@@ -3,8 +3,8 @@ import { Overlay as OverlayComponent } from "../overlay/overlay";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Dynamic overlay" },
+    { name: "description", content: "Welcome to your dynamic overlay!" },
   ];
 }
 
