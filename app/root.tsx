@@ -14,6 +14,7 @@ import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from "primereact/api";
 import "./i18n";
 import i18n from "./i18n";
+import 'unfonts.css'
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

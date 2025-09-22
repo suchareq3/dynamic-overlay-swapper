@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+#root {
+  /*max-width: min(100vw, 1920px);*/
+  /*max-height: min(100vh, 1080px);*/
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  /*padding: 2rem;*/
+  text-align: center;
+}
+
+.StanyKont, .Licytacja, .KupowaniePodpowiedzi, .WykupienieZawodnika {
+    height: 95px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .awantura-font p,
+  p.awantura-font{
+    font-family: var(--awantura-font);
+    position: relative;
+    top: 5px;
+    left: 3px;
+  }
+  
+  .opis {
+    background-color: var(--pasek-ciemny);
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--eurostile-font);
+    letter-spacing: 1.5px;
+    @apply text-xl;
+  }
+  
+  .eurostile-font p{
+    font-family: var(--eurostile-font);
+  }
+  
+  .vt323-font p{
+    font-family: var(--vt323-font);
+  }
+  
+  .questrial-font p{
+    font-family: var(--questrial-font);
+  }

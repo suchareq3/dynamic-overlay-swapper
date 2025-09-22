@@ -1,0 +1,46 @@
+@import "./_variables.css";
+
+.StanyKont .niebiescy-pula {
+  background-color: var(--niebieski-jasny);
+}
+.niebiescy-pula {
+  background-color: var(--niebieski-ciemny);
+}
+
+.StanyKont .zieloni-pula {
+  background-color: var(--zielony-jasny);
+}
+.zieloni-pula {
+  background-color: var(--zielony-ciemny);
+}
+
+.StanyKont .zolci-pula {
+  background-color: var(--zolty-jasny);
+}
+.zolci-pula {
+  background-color: var(--zolty-ciemny);
+}
+
+.StanyKont .mistrzowie-pula {
+  background-color: var(--mistrzowie-jasny);
+}
+.mistrzowie-pula {
+  background-color: var(--mistrzowie-ciemny);
+}
+
+.ogolna-pula {
+  background-color: var(--pula-ciemny);
+}
+
+.space-waster {
+  width: 28%;
+}
+
+.Licytacja .opis {
+  letter-spacing: 8px;
+}
+
+.ogolna-pula .opis,
+.WykupienieZawodnika .opis {
+  letter-spacing: 4px;
+}

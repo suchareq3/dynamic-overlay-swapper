@@ -62,7 +62,7 @@ export function Overlay() {
     if (active.type === "image" && active.image) {
         const url = pb.files.getURL(active, active.image);
         return (
-            <div className="w-screen h-screen flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center">
                 <img src={url} alt={active.short_description} className="max-w-full max-h-full object-contain" />
             </div>
         );
@@ -86,7 +86,7 @@ export function Overlay() {
         });
 
         return (
-            <div className="w-screen h-screen">
+            <div className="w-full h-full">
                 <Suspense fallback={<p className="text-2xl">{t("overlay.loading_component")}</p>}>
                     <LazyComp />
                 </Suspense>

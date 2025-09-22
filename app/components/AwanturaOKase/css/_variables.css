@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  --niebieski-ciemny: rgb(8, 26, 77);
+  --niebieski-jasny: rgb(8, 35, 112);
+
+  --zielony-ciemny: rgb(3, 44, 29);
+  --zielony-jasny: rgb(2, 65, 43);
+
+  /* Add fallbacks for theme() resolution */
+  --zolty-ciemny: theme('colors.yellow.700', #a16207);
+  --zolty-jasny: theme('colors.yellow.600', #ca8a04);
+
+  --mistrzowie-ciemny: rgb(61, 55, 65);
+  --mistrzowie-jasny: rgb(86, 78, 92);
+
+  --pula-ciemny: theme('colors.neutral.700', #404040);
+  --ibisz-jasny: theme('colors.zinc.600', #52525b);
+  --pasek-ciemny: theme('colors.neutral.900', #171717);
+
+  --awantura-font: 'LCDDot';
+  --eurostile-font: 'Eurostile';
+  --vt323-font: 'VT323';
+  --questrial-font: 'Questrial';
+}
