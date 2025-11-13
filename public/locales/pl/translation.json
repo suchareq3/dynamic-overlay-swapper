@@ -3,6 +3,8 @@
     "example_text": "Przykładowy komponent"
   },
   "config_panel": {
+    "english": "Angielski",
+    "polish": "Polski",
     "image": "Obrazek",
     "react_component": "Komponent React",
     "error": "Błąd",
@@ -26,6 +28,8 @@
     "delete_overlay_confirm": "Czy chcesz usunąć nakładkę \"{{overlay}}\"? Nie można tego cofnąć.",
     "delete_overlay_header": "Usunąć nakładkę?",
     "delete": "Usuń",
+    "edit_parameters": "Edytuj parametry",
+    "parameters_save_failed": "Nie udało się zapisać parametrów",
     "validation": "Walidacja",
     "short_description_required": "Wymagany krótki opis",
     "type_required": "Wybierz typ nakładki",
@@ -48,10 +52,15 @@
     "overlay_available_at_url": "Nakładka dostępna pod adresem URL",
     "no_overlays_found": "Nie znaleziono nakładek. Dodaj nową!",
     "select_overlay": "Wybierz nakładkę",
+    "parameters": "Parametry",
     "active": "Aktywna",
     "actions": "Akcje",
-    "english": "Angielski",
-    "polish": "Polski"
+    "saving": "Zapisywanie...",
+    "add": "Dodaj",
+    "close": "Zamknij",
+    "no_parameters": "Brak parametrów",
+    "parameter_key": "Klucz Parametru",
+    "parameter_value": "Wartość Parametru"
   },
   "overlay": {
     "loading_overlay": "Ładowanie nakładki...",

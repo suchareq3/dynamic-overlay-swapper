@@ -14,6 +14,8 @@ import { Image } from "primereact/image";
 import { Tooltip } from "primereact/tooltip";
 import { useHref } from "react-router";
 import { useTranslation } from "react-i18next";
+import { Dialog } from "primereact/dialog";
+import { useDebounce } from "primereact/hooks";
 
 const pb = new Pocketbase('http://127.0.0.1:8090');
 await pb.collection("_superusers").authWithPassword(import.meta.env.VITE_BACKEND_ADMIN_EMAIL, import.meta.env.VITE_BACKEND_ADMIN_PASSWORD)
@@ -26,6 +28,10 @@ export function ConfigPanel() {
     const [submitting, setSubmitting] = useState(false);
     const [overlays, setOverlays] = useState<any[]>([]);
     const [loadingOverlays, setLoadingOverlays] = useState(false);
+    const [paramsDialogOpen, setParamsDialogOpen] = useState(false);
+    const [paramsOverlay, setParamsOverlay] = useState<any | null>(null);
+    const [paramsRows, setParamsRows] = useState<{ key: string; value: string; _id: string; }[]>([]);
+    const [savingParams, setSavingParams] = useState(false);
     const toast = useRef<Toast>(null);
     const fileUploadRef = useRef<FileUpload>(null);
     const overlayHref = useHref("/overlay");
@@ -166,6 +172,76 @@ export function ConfigPanel() {
             <Button size="small" label={t("config_panel.delete")} outlined onClick={() => confirmDelete(row)} />
         </div>
     );
+
+    const parametersBody = (row: any) => (
+        <Button size="small" label={t("config_panel.edit_parameters")}
+            onClick={() => {
+                setParamsOverlay(row);
+                const entries = Object.entries(row?.parameters ?? {}) as [string, any][];
+                const rows = entries.map(([k, v]) => ({ key: k, value: JSON.stringify(v), _id: k + "__" + Math.random().toString(36).slice(2) }));
+                setParamsRows(rows);
+                // snapshot current parameters to avoid immediate save on open
+                lastSavedParamsRef.current = JSON.stringify(row?.parameters ?? {});
+                setParamsDialogOpen(true);
+            }}
+        />
+    );
+
+    // Normalize useDebounce return in case library returns a tuple in current version
+    const _debounced = useDebounce(paramsRows, 500) as any;
+    const debouncedParamsRows = Array.isArray(_debounced) ? _debounced[0] : _debounced;
+    const lastSavedParamsRef = useRef<string>("");
+
+    useEffect(() => {
+        const save = async () => {
+            if (!paramsDialogOpen || !paramsOverlay) return;
+
+            const obj: Record<string, any> = {};
+            for (const r of debouncedParamsRows || []) {
+                const k = r.key?.trim();
+                if (!k) continue;
+                const valRaw = r.value ?? "";
+                let parsed: any = valRaw;
+                try {
+                    parsed = JSON.parse(valRaw);
+                } catch {}
+                obj[k] = parsed;
+            }
+
+            const json = JSON.stringify(obj);
+            if (json === lastSavedParamsRef.current) return;
+
+            try {
+                setSavingParams(true);
+                await pb.collection("overlays").update(paramsOverlay.id, { parameters: obj });
+                lastSavedParamsRef.current = json;
+            } catch (err: any) {
+                console.error(err);
+                toast.current?.show({ severity: "error", summary: t("config_panel.error"), detail: err?.message || t("config_panel.parameters_save_failed") });
+            } finally {
+                setSavingParams(false);
+            }
+        };
+        save();
+        // only run when debounced rows change; dialog open/overlay are checked inside
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedParamsRows]);
+
+    const addParamRow = () => {
+        setParamsRows((prev) => [...prev, { key: "", value: "", _id: "row_" + Math.random().toString(36).slice(2) }]);
+    };
+
+    const updateParamKey = (id: string, newKey: string) => {
+        setParamsRows((prev) => prev.map(r => r._id === id ? { ...r, key: newKey } : r));
+    };
+
+    const updateParamValue = (id: string, newValue: string) => {
+        setParamsRows((prev) => prev.map(r => r._id === id ? { ...r, value: newValue } : r));
+    };
+
+    const removeParamRow = (id: string) => {
+        setParamsRows((prev) => prev.filter(r => r._id !== id));
+    };
 
     const handleSubmit = async () => {
         try {
@@ -314,9 +390,35 @@ export function ConfigPanel() {
                 <Column field="type" header={t("config_panel.type")} sortable></Column>
                 <Column header={t("config_panel.component_name")} body={getComponentNameBody} sortable></Column>
                 <Column header={t("config_panel.image")} body={getImageBody}></Column>
+                <Column header={t("config_panel.parameters")} body={parametersBody}></Column>
                 <Column field="active" header={t("config_panel.active")} sortable></Column>
                 <Column header={t("config_panel.actions")} body={actionsBody}></Column>
             </DataTable>
+
+            <Dialog header={t("config_panel.parameters")} visible={paramsDialogOpen} style={{ width: "40rem" }} onHide={() => { setParamsDialogOpen(false); setParamsOverlay(null); setParamsRows([]); lastSavedParamsRef.current = ""; }}
+                footer={
+                    <div className="flex justify-between w-full">
+                        <div className="text-sm text-[var(--text-color-secondary)]">{savingParams ? t("config_panel.saving") : ""}</div>
+                        <div className="flex gap-2">
+                            <Button label={t("config_panel.add")} icon="pi pi-plus" onClick={addParamRow} />
+                            <Button label={t("config_panel.close")} icon="pi pi-times" severity="secondary" onClick={() => { setParamsDialogOpen(false); setParamsOverlay(null); setParamsRows([]); lastSavedParamsRef.current = ""; }} />
+                        </div>
+                    </div>
+                }
+            >
+                <div className="flex flex-col gap-3">
+                    {paramsRows.length === 0 && (
+                        <div className="text-[var(--text-color-secondary)]">{t("config_panel.no_parameters")}</div>
+                    )}
+                    {paramsRows.map((row) => (
+                        <div key={row._id} className="flex items-center gap-2">
+                            <InputText className="w-52" value={row.key} onChange={(e) => updateParamKey(row._id, e.target.value)} placeholder={t("config_panel.parameter_key")} />
+                            <InputText className="flex-1" value={row.value} onChange={(e) => updateParamValue(row._id, e.target.value)} placeholder={t("config_panel.parameter_value")} />
+                            <Button icon="pi pi-trash" severity="danger" text onClick={() => removeParamRow(row._id)} />
+                        </div>
+                    ))}
+                </div>
+            </Dialog>
 
             <Dropdown
                 value={selectedLang}

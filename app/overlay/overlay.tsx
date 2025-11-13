@@ -88,7 +88,7 @@ export function Overlay() {
         return (
             <div className="w-screen h-screen">
                 <Suspense fallback={<p className="text-2xl">{t("overlay.loading_component")}</p>}>
-                    <LazyComp />
+                    <LazyComp parameters={active.parameters ?? {}} />
                 </Suspense>
             </div>
         );
