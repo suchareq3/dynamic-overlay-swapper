@@ -60,6 +60,7 @@ export function Overlay() {
     }
 
     if (active.type === "image" && active.image) {
+        console.log("active:", active)
         const url = pb.files.getURL(active, active.image);
         return (
             <div className="w-screen h-screen flex items-center justify-center">
@@ -88,7 +89,7 @@ export function Overlay() {
         return (
             <div className="w-screen h-screen">
                 <Suspense fallback={<p className="text-2xl">{t("overlay.loading_component")}</p>}>
-                    <LazyComp />
+                    <LazyComp active={active ?? {}} />
                 </Suspense>
             </div>
         );

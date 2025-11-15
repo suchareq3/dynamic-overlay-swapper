@@ -3,8 +3,6 @@
     "example_text": "Example Component"
   },
   "config_panel": {
-    "english": "English",
-    "polish": "Polish",
     "image": "Image",
     "react_component": "React Component",
     "error": "Error",
@@ -28,8 +26,6 @@
     "delete_overlay_confirm": "Delete the \"{{overlay}}\" overlay? This cannot be undone.",
     "delete_overlay_header": "Delete overlay?",
     "delete": "Delete",
-    "edit_parameters": "Edit parameters",
-    "parameters_save_failed": "Failed to save parameters",
     "validation": "Validation",
     "short_description_required": "Short description is required",
     "type_required": "Please pick an overlay type",
@@ -52,15 +48,10 @@
     "overlay_available_at_url": "Overlay available at URL",
     "no_overlays_found": "No overlays found. Add a new one!",
     "select_overlay": "Select an overlay",
-    "parameters": "Parameters",
     "active": "Active",
     "actions": "Actions",
-    "saving": "Saving...",
-    "add": "Add",
-    "close": "Close",
-    "no_parameters": "No parameters",
-    "parameter_key": "Parameter key",
-    "parameter_value": "Parameter value"
+    "english": "English",
+    "polish": "Polish"
   },
   "overlay": {
     "loading_overlay": "Loading overlay...",
